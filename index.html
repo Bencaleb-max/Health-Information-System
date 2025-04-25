@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Health Information System</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    input, button { margin: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Health Info System (Web Version)</h1>
+
+  <h2>Create Health Program</h2>
+  <input id="programName" type="text" placeholder="e.g. Malaria">
+  <button onclick="createProgram()">Create Program</button>
+
+  <h2>Register New Client</h2>
+  <input id="clientId" type="text" placeholder="Client ID">
+  <input id="clientName" type="text" placeholder="Client Name">
+  <button onclick="registerClient()">Register Client</button>
+
+  <h2>Enroll Client in Program</h2>
+  <input id="enrollClientId" type="text" placeholder="Client ID">
+  <input id="programToEnroll" type="text" placeholder="Program Name">
+  <button onclick="enrollClient()">Enroll Client</button>
+
+  <h2>Search for a Client</h2>
+  <input id="searchClientId" type="text" placeholder="Client ID">
+  <button onclick="searchClient()">Search</button>
+
+  <h2>Client Profile</h2>
+  <pre id="clientProfile">No client selected.</pre>
+
+  <script>
+    const clients = {};
+    const programs = {};
+
+    function createProgram() {
+      const name = document.getElementById('programName').value.trim();
+      if (!name) return alert('Program name is required');
+      programs[name] = { name, clients: [] };
+      alert(`Program '${name}' created.`);
+    }
+
+    function registerClient() {
+      const id = document.getElementById('clientId').value.trim();
+      const name = document.getElementById('clientName').value.trim();
+      if (!id || !name) return alert('Both client ID and name are required');
+      clients[id] = { id, name, programs: [] };
+      alert(`Client '${name}' registered.`);
+    }
+
+    function enrollClient() {
+      const clientId = document.getElementById('enrollClientId').value.trim();
+      const programName = document.getElementById('programToEnroll').value.trim();
+
+      if (!clients[clientId]) return alert('Client not found');
+      if (!programs[programName]) return alert('Program not found');
+
+      if (!clients[clientId].programs.includes(programName)) {
+        clients[clientId].programs.push(programName);
+        programs[programName].clients.push(clientId);
+        alert(`Client ${clientId} enrolled in ${programName}`);
+      } else {
+        alert(`Client is already enrolled in ${programName}`);
+      }
+    }
+
+    function searchClient() {
+      const clientId = document.getElementById('searchClientId').value.trim();
+      const profile = document.getElementById('clientProfile');
+      const client = clients[clientId];
+
+      if (!client) {
+        profile.textContent = 'Client not found.';
+      } else {
+        profile.textContent = JSON.stringify(client, null, 2);
+      }
+    }
+
+    // Simulated API endpoint
+    window.getClientProfileAPI = function(clientId) {
+      return clients[clientId] || null;
+    }
+  </script>
+</body>
+</html>
